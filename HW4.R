@@ -20,7 +20,7 @@ acs_vars = load_variables(2021, "acs5")
 write_csv(acs_vars, "acsvars.csv")
 
 
-
+#getting census daya
 demographics = get_acs(
   geography="cbsa",  
   variables=c(
@@ -123,13 +123,16 @@ airport_demographics = left_join(airports_all, origin_pop, by="origin_cbsa") %>%
 
 #Creating a CBSA to CBSA dataset
 
+#grouping by origin to make cbsa to cbsa dataset
 CBSAs = airport_demographics %>% group_by(origin_cbsa, dest_cbsa) #%>% #summarize(passengers = passengers, origin_percent_in_poverty = origin_percent_in_poverty, dest_percent_in_poverty = dest_percent_in_poverty, distancemiles = distancemiles, origin_pop = origin_pop, dest_pop = dest_pop)
 
+#creating model 
 CBSAmodel = lm(passengers ~ origin_pop + dest_pop + origin_percent_in_poverty + dest_percent_in_poverty + distancemiles, CBSAs)
 summary(CBSAmodel)
  
 #Question 4
 
+#creating a table that i can use to predict using my model above
 potential_airports = tibble(
   origin_pop= 1391801,
   dest_pop=c(2493429, 863807, 382747, 3296317),
@@ -141,7 +144,7 @@ potential_airports = tibble(
 potential_airports$forecast_passengers = predict(CBSAmodel, potential_airports)
 potential_airports
 
-
+#doing it again in the other direction
 potential_airports = tibble(
   origin_pop= c(2493429, 863807, 382747, 3296317),
   dest_pop=1391801,
